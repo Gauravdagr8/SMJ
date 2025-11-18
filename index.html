@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>Shree Mangalam Jewellers – Silver MRP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <style>
@@ -209,6 +212,16 @@
       margin-right: 2px;
     }
 
+    .result-meta {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: #7b6a57;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .actions-row {
       display: flex;
       gap: 8px;
@@ -290,7 +303,9 @@
     }
 
     .history-table th:nth-child(2),
-    .history-table td:nth-child(2) {
+    .history-table td:nth-child(2),
+    .history-table th:nth-child(3),
+    .history-table td:nth-child(3) {
       text-align: left;
     }
 
@@ -302,6 +317,57 @@
 
     .history-table tbody tr:last-child td {
       border-bottom: none;
+    }
+
+    /* Toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 30px;
+      height: 16px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d8cfc6;
+      transition: 0.2s;
+      border-radius: 16px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+    }
+
+    .switch input:checked + .slider {
+      background-color: var(--maroon);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(14px);
+    }
+
+    .switch-inline {
+      margin-left: 4px;
+      vertical-align: middle;
     }
 
     @media (max-width: 500px) {
@@ -344,11 +410,12 @@
       <div class="error" id="error-box"></div>
 
       <div class="result-panel" id="result-panel">
-        <div class="result-label">Final billing price</div>
+        <div class="result-label">Maximum retail price</div>
         <div class="result-code" id="result-code"></div>
         <div class="result-mrp">
           <span class="currency">₹</span><span id="result-mrp">0.00</span>
         </div>
+        <div class="result-meta" id="result-meta"></div>
       </div>
 
       <div class="actions-row">
@@ -368,10 +435,12 @@
             <tr>
               <th>#</th>
               <th>Code</th>
+              <th>Item</th>
               <th>Net wt (g)</th>
               <th>Rate</th>
               <th>Making</th>
               <th>MRP</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="history-body"></tbody>
@@ -389,6 +458,7 @@
     const resultPanel = document.getElementById("result-panel");
     const resultCode  = document.getElementById("result-code");
     const resultMrp   = document.getElementById("result-mrp");
+    const resultMeta  = document.getElementById("result-meta");
 
     const addItemBtn      = document.getElementById("add-item-btn");
     const resetBtn        = document.getElementById("reset-btn");
@@ -396,14 +466,30 @@
     const historyBody     = document.getElementById("history-body");
     const historyTotalEl  = document.getElementById("history-total");
 
-    let items = [];
+    // Item code → name map
+    const itemNames = {
+      SAS: "AGARBATI STAND", SAL: "AMOLIYA", SAM: "ANIMAL MURTI", SKB: "BABY KADA",
+      SBJ: "BABY LEG KADA", SBG: "BANGLES", SBN: "BANTA", SBL: "BELL", SBX: "BOX", SBK: "BUCKET",
+      SCS: "CHAIN PANDANT SET", SCH: "CHAINS", SCT: "CHATAR", SCG: "CHIRAG", SCR: "COUPLE RINGS",
+      SCU: "CUP", SDY: "DIYA", SER: "EARINGS", SFC: "FACE/MUKOTA", SCP: "FANCY PANDANT",
+      SFW: "FERWA", SFL: "FLOWER", SFP: "FOOLPATRA", SGB: "GENTS BRACELET", SGR: "GENTS RING",
+      SGH: "GHAR", SGL: "GLASS", SGP: "GOD PANDANT", SBT: "GUGRA", SGD: "GULABDANI",
+      SID: "ITARDANI", SJO: "JODVA", SKA: "KADA", SKP: "KAPOOR AARTI", SKR: "KARANDA",
+      SKY: "KEY CHAIN", SKI: "KOHIRI/KERI", SLB: "LADIES BRACELET", SLR: "LADIES RING",
+      SLT: "LANTURN", SLK: "LEG KADA", SLO: "LOTA", SLW: "LOTI+WATI", SMS: "MANGALSUTRA",
+      SMK: "MUKUT", SMR: "MURTI", SNY: "NARYAL", SPH: "PATH", SPL: "PAYAL", SPK: "PICHKARI",
+      SSP: "PIN/BROUCH", SPB: "PLAIN BANDS", SPR: "PURSE", SSH: "SHIHASAN", SNS: "SHIVLING+NAG",
+      SSM: "SOLID MURTI", SSF: "SPOON/FALI", STT: "TATTALU", STE: "test", STL: "THALI",
+      STU: "TULSI", STR: "TURTLE RING", SVG: "VEGETABLE", SWC: "WAIST CHAIN", SWT: "WATI"
+    };
 
-    // Load last rate on page load
+    let items = [];
+    let resultDetailsVisible = false;
+
+    // Load last rate
     window.addEventListener("load", () => {
       const savedRate = localStorage.getItem("silverRate");
-      if (savedRate !== null) {
-        rateEl.value = savedRate;
-      }
+      if (savedRate !== null) rateEl.value = savedRate;
       qrTextEl.focus();
     });
 
@@ -419,7 +505,6 @@
 
     function calculateCurrent() {
       clearError();
-
       const raw = qrTextEl.value.trim();
       const silverRate = parseFloat(rateEl.value);
 
@@ -429,15 +514,14 @@
       }
 
       const parts = raw.split(",");
-
       if (parts.length < 6) {
         showError("Invalid QR format");
         return null;
       }
 
       const productCode = parts[0];
-      const netWt       = parseFloat(parts[3]); // net weight
-      const makingPerGm = parseFloat(parts[5]); // making / gm
+      const netWt       = parseFloat(parts[3]);
+      const makingPerGm = parseFloat(parts[5]);
 
       if ([netWt, makingPerGm].some(v => isNaN(v))) {
         showError("Invalid weight or making value.");
@@ -445,12 +529,38 @@
       }
 
       const mrp = netWt * (silverRate + makingPerGm) * 1.03;
+      const highMaking = makingPerGm > 100;
+      const itemCode   = productCode.slice(0, 3).toUpperCase();
+      const itemName   = itemNames[itemCode] || "";
 
-      resultCode.textContent = "Code: " + productCode;
-      resultMrp.textContent  = mrp.toFixed(2);
+      resultCode.textContent = itemName
+        ? `Code: ${productCode} • ${itemName}`
+        : `Code: ${productCode}`;
+      resultMrp.textContent = mrp.toFixed(2);
       resultPanel.style.display = "block";
 
-      return { productCode, netWt, silverRate, makingPerGm, mrp };
+      if (!highMaking) {
+        resultMeta.innerHTML =
+          `Net wt: ${netWt.toFixed(3)} g • Rate: ₹${silverRate} • Making: ₹${makingPerGm}/gm`;
+      } else {
+        const detailsText = resultDetailsVisible
+          ? `Net wt: ${netWt.toFixed(3)} g • Rate: ₹${silverRate} • Making: ₹${makingPerGm}/gm`
+          : "";
+
+        resultMeta.innerHTML = `
+          <span id="result-meta-text">${detailsText}</span>
+          <label class="switch switch-inline">
+            <input type="checkbox" id="result-toggle" ${resultDetailsVisible ? "checked" : ""}>
+            <span class="slider"></span>
+          </label>
+        `;
+        document.getElementById("result-toggle").onchange = () => {
+          resultDetailsVisible = !resultDetailsVisible;
+          calculateCurrent();
+        };
+      }
+
+      return { productCode, itemName, netWt, silverRate, makingPerGm, mrp, highMaking, detailsVisible: !highMaking };
     }
 
     function autoCalculate() {
@@ -466,16 +576,24 @@
       }
 
       historySection.style.display = "block";
-      historyBody.innerHTML = items.map((item, idx) => `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${item.productCode}</td>
-          <td>${item.netWt.toFixed(3)}</td>
-          <td>${item.silverRate.toFixed(0)}</td>
-          <td>${item.makingPerGm.toFixed(0)}</td>
-          <td>${item.mrp.toFixed(2)}</td>
-        </tr>
-      `).join("");
+      historyBody.innerHTML = items.map((item, idx) => {
+        const hide = item.highMaking && !item.detailsVisible;
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>${item.productCode}</td>
+            <td>${item.itemName}</td>
+            <td>${hide ? "" : item.netWt.toFixed(3)}</td>
+            <td>${hide ? "" : item.silverRate.toFixed(0)}</td>
+            <td>${hide ? "" : item.makingPerGm.toFixed(0)}</td>
+            <td>${item.mrp.toFixed(2)}</td>
+            <td>${item.highMaking ? `
+              <label class="switch">
+                <input type="checkbox" class="row-toggle" data-index="${idx}" ${item.detailsVisible ? "checked" : ""}>
+                <span class="slider"></span>
+              </label>` : ""}</td>
+          </tr>`;
+      }).join("");
 
       const total = items.reduce((sum, it) => sum + it.mrp, 0);
       historyTotalEl.textContent = total.toFixed(2);
@@ -483,37 +601,27 @@
 
     function addItem() {
       const current = calculateCurrent();
-      if (!current) {
-        qrTextEl.focus();
-        return;
-      }
+      if (!current) return qrTextEl.focus();
 
       items.push(current);
       renderHistory();
 
-      // Clear and refocus QR input
       qrTextEl.value = "";
       resultPanel.style.display = "none";
-      resultCode.textContent = "";
-      resultMrp.textContent = "0.00";
-      clearError();
+      resultDetailsVisible = false;
       qrTextEl.focus();
     }
 
     function resetItems() {
       items = [];
       renderHistory();
-
       qrTextEl.value = "";
       resultPanel.style.display = "none";
-      resultCode.textContent = "";
-      resultMrp.textContent = "0.00";
-      clearError();
+      resultDetailsVisible = false;
       qrTextEl.focus();
     }
 
     qrTextEl.addEventListener("input", autoCalculate);
-    
     rateEl.addEventListener("input", () => {
       localStorage.setItem("silverRate", rateEl.value);
       autoCalculate();
@@ -521,12 +629,19 @@
 
     sampleBtn.addEventListener("click", () => {
       qrTextEl.value = "STE1,925,1,0.9,1,200,\\Gm,,,,,,,,,,,,,,";
+      resultDetailsVisible = false;
       autoCalculate();
     });
 
     addItemBtn.addEventListener("click", addItem);
     resetBtn.addEventListener("click", resetItems);
 
+    historyBody.addEventListener("change", (e) => {
+      if (!e.target.classList.contains("row-toggle")) return;
+      const index = parseInt(e.target.dataset.index);
+      items[index].detailsVisible = e.target.checked;
+      renderHistory();
+    });
   </script>
 </body>
 </html>
