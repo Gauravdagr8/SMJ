@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shree Mangalam Jewellers – Silver MRP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --maroon: #7a2222;
+      --maroon-dark: #4d1313;
+      --gold: #d9b25f;
+      --bg: #f7f3ee;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Poppins", system-ui, sans-serif;
+      background: radial-gradient(circle at top, #fbe9d7, #f3ebe4 35%, #e6ded6 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .shell {
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+      padding: 26px 22px 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(217, 178, 95, 0.18), transparent 55%);
+      pointer-events: none;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-family: "Playfair Display", serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      color: var(--maroon-dark);
+    }
+
+    .brand-subtitle {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #7c6c60;
+      margin-top: -1px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent);
+      margin: 10px 0 14px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #8a7b6e;
+    }
+
+    .btn-small {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #f0e4d7;
+      color: #594b3f;
+    }
+
+    .btn-small:hover {
+      background: #e6d6c3;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      color: #5f5146;
+    }
+
+    textarea,
+    input[type="number"] {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #d8cfc6;
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      font-family: "Poppins", monospace;
+      background: #fbf8f5;
+      outline: none;
+      transition: border 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 54px;
+    }
+
+    textarea:focus,
+    input[type="number"]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(217,178,95,0.4);
+      background: #fffdfa;
+    }
+
+    .field {
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .error {
+      margin-top: 6px;
+      border-radius: 14px;
+      padding: 10px;
+      background: #fff5f5;
+      border: 1px solid #e0a6a6;
+      color: #7a2222;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .result-panel {
+      margin-top: 6px;
+      border-radius: 20px;
+      padding: 16px 16px 14px;
+      background: linear-gradient(135deg, #fff9ee, #f8e7c4);
+      border: 1px solid rgba(217,178,95,0.55);
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.21em;
+      color: #8b6d3f;
+      margin-bottom: 4px;
+    }
+
+    .result-code {
+      font-size: 0.8rem;
+      color: #7b6a57;
+      margin-bottom: 2px;
+    }
+
+    .result-mrp {
+      font-family: "Playfair Display", serif;
+      font-size: 1.9rem;
+      color: var(--maroon-dark);
+      font-weight: 700;
+    }
+
+    .currency {
+      font-size: 1.1rem;
+      vertical-align: super;
+      margin-right: 2px;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-pill {
+      flex: 1;
+      font-size: 0.75rem;
+      padding: 7px 0;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--maroon), var(--maroon-dark));
+      color: #fff6e9;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: #7a4b30;
+      border: 1px solid rgba(122, 75, 48, 0.3);
+    }
+
+    .history {
+      margin-top: 14px;
+      border-radius: 18px;
+      border: 1px solid #e1d6c8;
+      background: #fbf8f5;
+      padding: 10px 12px 10px;
+      display: none;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .history-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7e6a55;
+    }
+
+    .history-total {
+      font-size: 0.8rem;
+      color: #4d3b2a;
+    }
+
+    .history-total span {
+      font-weight: 600;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 4px 3px;
+      text-align: right;
+      border-bottom: 1px solid #e7ddcf;
+    }
+
+    .history-table th:first-child,
+    .history-table td:first-child {
+      text-align: center;
+    }
+
+    .history-table th:nth-child(2),
+    .history-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .history-table thead th {
+      font-weight: 600;
+      color: #7b6a57;
+      background: #f3ebe3;
+    }
+
+    .history-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    @media (max-width: 500px) {
+      .card { padding: 20px 16px 18px; }
+      .brand-logo { width: 54px; height: 54px; }
+      .brand-name { font-size: 1.2rem; }
+      .result-mrp { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="brand-header">
+        <img src="logo.png" alt="Shree Mangalam Jewellers" class="brand-logo" />
+        <div class="brand-text">
+          <div class="brand-name">Shree Mangalam Jewellers</div>
+          <div class="brand-subtitle">Specialist in Silver Jewellery 925</div>
+          <div class="brand-subtitle">Since 1994</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="title-row">
+        <h2>Quick Quotation</h2>
+        <button class="btn-small" id="sample-btn">Sample</button>
+      </div>
+
+      <div class="field">
+        <label for="qr-text">Scan QR</label>
+        <textarea id="qr-text" placeholder="Paste scanned data"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="silver-rate">Silver rate per gram (₹)</label>
+        <input id="silver-rate" type="number" step="0.01" value="150" />
+      </div>
+
+      <div class="error" id="error-box"></div>
+
+      <div class="result-panel" id="result-panel">
+        <div class="result-label">Final billing price</div>
+        <div class="result-code" id="result-code"></div>
+        <div class="result-mrp">
+          <span class="currency">₹</span><span id="result-mrp">0.00</span>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-pill btn-primary" id="add-item-btn">Add item</button>
+        <button class="btn-pill btn-outline" id="reset-btn">Reset</button>
+      </div>
+
+      <div class="history" id="history-section">
+        <div class="history-header">
+          <div class="history-title">Item history</div>
+          <div class="history-total">
+            Total: ₹<span id="history-total">0.00</span>
+          </div>
+        </div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Code</th>
+              <th>Net wt (g)</th>
+              <th>Rate</th>
+              <th>Making</th>
+              <th>MRP</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qrTextEl    = document.getElementById("qr-text");
+    const rateEl      = document.getElementById("silver-rate");
+    const sampleBtn   = document.getElementById("sample-btn");
+
+    const errorBox    = document.getElementById("error-box");
+    const resultPanel = document.getElementById("result-panel");
+    const resultCode  = document.getElementById("result-code");
+    const resultMrp   = document.getElementById("result-mrp");
+
+    const addItemBtn      = document.getElementById("add-item-btn");
+    const resetBtn        = document.getElementById("reset-btn");
+    const historySection  = document.getElementById("history-section");
+    const historyBody     = document.getElementById("history-body");
+    const historyTotalEl  = document.getElementById("history-total");
+
+    let items = [];
+
+    // Load last rate on page load
+    window.addEventListener("load", () => {
+      const savedRate = localStorage.getItem("silverRate");
+      if (savedRate !== null) {
+        rateEl.value = savedRate;
+      }
+      qrTextEl.focus();
+    });
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = "block";
+      resultPanel.style.display = "none";
+    }
+
+    function clearError() {
+      errorBox.style.display = "none";
+    }
+
+    function calculateCurrent() {
+      clearError();
+
+      const raw = qrTextEl.value.trim();
+      const silverRate = parseFloat(rateEl.value);
+
+      if (!raw || isNaN(silverRate) || silverRate <= 0) {
+        resultPanel.style.display = "none";
+        return null;
+      }
+
+      const parts = raw.split(",");
+
+      if (parts.length < 6) {
+        showError("Invalid QR format");
+        return null;
+      }
+
+      const productCode = parts[0];
+      const netWt       = parseFloat(parts[3]); // net weight
+      const makingPerGm = parseFloat(parts[5]); // making / gm
+
+      if ([netWt, makingPerGm].some(v => isNaN(v))) {
+        showError("Invalid weight or making value.");
+        return null;
+      }
+
+      const mrp = netWt * (silverRate + makingPerGm) * 1.03;
+
+      resultCode.textContent = "Code: " + productCode;
+      resultMrp.textContent  = mrp.toFixed(2);
+      resultPanel.style.display = "block";
+
+      return { productCode, netWt, silverRate, makingPerGm, mrp };
+    }
+
+    function autoCalculate() {
+      calculateCurrent();
+    }
+
+    function renderHistory() {
+      if (!items.length) {
+        historySection.style.display = "none";
+        historyBody.innerHTML = "";
+        historyTotalEl.textContent = "0.00";
+        return;
+      }
+
+      historySection.style.display = "block";
+      historyBody.innerHTML = items.map((item, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td>${item.productCode}</td>
+          <td>${item.netWt.toFixed(3)}</td>
+          <td>${item.silverRate.toFixed(0)}</td>
+          <td>${item.makingPerGm.toFixed(0)}</td>
+          <td>${item.mrp.toFixed(2)}</td>
+        </tr>
+      `).join("");
+
+      const total = items.reduce((sum, it) => sum + it.mrp, 0);
+      historyTotalEl.textContent = total.toFixed(2);
+    }
+
+    function addItem() {
+      const current = calculateCurrent();
+      if (!current) {
+        qrTextEl.focus();
+        return;
+      }
+
+      items.push(current);
+      renderHistory();
+
+      // Clear and refocus QR input
+      qrTextEl.value = "";
+      resultPanel.style.display = "none";
+      resultCode.textContent = "";
+      resultMrp.textContent = "0.00";
+      clearError();
+      qrTextEl.focus();
+    }
+
+    function resetItems() {
+      items = [];
+      renderHistory();
+
+      qrTextEl.value = "";
+      resultPanel.style.display = "none";
+      resultCode.textContent = "";
+      resultMrp.textContent = "0.00";
+      clearError();
+      qrTextEl.focus();
+    }
+
+    qrTextEl.addEventListener("input", autoCalculate);
+    
+    rateEl.addEventListener("input", () => {
+      localStorage.setItem("silverRate", rateEl.value);
+      autoCalculate();
+    });
+
+    sampleBtn.addEventListener("click", () => {
+      qrTextEl.value = "STE1,925,1,0.9,1,200,\\Gm,,,,,,,,,,,,,,";
+      autoCalculate();
+    });
+
+    addItemBtn.addEventListener("click", addItem);
+    resetBtn.addEventListener("click", resetItems);
+
+  </script>
+</body>
+</html>
