@@ -1,723 +1,205 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Shree Mangalam Jewellers – Silver MRP</title>
-
-  <!-- Favicon -->
+<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8" />  <title>Shree Mangalam Jewellers – Quick Quotation</title>
   <link rel="icon" type="image/png" href="logo.png">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --maroon: #7a2222;
-      --maroon-dark: #4d1313;
-      --gold: #d9b25f;
-      --bg: #f7f3ee;
-    }
-
+    :root { --maroon: #7a2222; --maroon-dark: #4d1313; --gold: #d9b25f; --bg: #f7f3ee; --text: #5f5146; }
     * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: "Poppins", sans-serif; background: radial-gradient(circle at top, #fbe9d7, #f3ebe4 35%, #e6ded6 100%); display: flex; justify-content: center; align-items: center; padding: 20px; color: var(--text); }
+    .shell { max-width: 580px; width: 100%; }
+    .card { background: #ffffff; border-radius: 24px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12); padding: 28px 24px; position: relative; overflow: hidden; }
+    .brand-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .brand-logo { width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+    .brand-name { font-family: "Playfair Display", serif; font-size: 1.5rem; color: var(--maroon-dark); line-height: 1.2; }
+    .brand-subtitle { font-size: 0.75rem; text-transform: uppercase; color: #8a7b6e; letter-spacing: 0.05em; }
+    .divider { height: 1px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent); margin: 12px 0 18px; }
+    .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    h2 { margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.18em; color: #a19388; font-weight: 600; }
+    .btn-small { font-size: 0.7rem; padding: 5px 12px; border-radius: 999px; border: 1px solid #e1d6c8; cursor: pointer; background: #fdfaf7; color: #8a7b6e; transition: 0.2s; }
+    label { display: block; font-size: 0.8rem; margin-bottom: 6px; color: #8a7b6e; font-weight: 500; }
+    textarea, input[type="number"] { width: 100%; border-radius: 12px; border: 1.5px solid #eee5db; padding: 10px 14px; font-size: 0.9rem; font-family: "Poppins", monospace; background: #fbf9f7; outline: none; }
+    
+    /* Custom Modal Styles */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; }
+    .modal-content { background: #fff; padding: 24px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+    .modal-title { font-family: "Playfair Display", serif; font-size: 1.2rem; color: var(--maroon-dark); margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Poppins", system-ui, sans-serif;
-      background: radial-gradient(circle at top, #fbe9d7, #f3ebe4 35%, #e6ded6 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .shell {
-      max-width: 520px;
-      width: 100%;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
-      padding: 26px 22px 20px 22px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top right, rgba(217, 178, 95, 0.18), transparent 55%);
-      pointer-events: none;
-    }
-
-    .brand-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .brand-logo {
-      width: 64px;
-      height: 64px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .brand-name {
-      font-family: "Playfair Display", serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.04em;
-      color: var(--maroon-dark);
-    }
-
-    .brand-subtitle {
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #7c6c60;
-      margin-top: -1px;
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent);
-      margin: 10px 0 14px;
-    }
-
-    .title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #8a7b6e;
-    }
-
-    .btn-small {
-      font-size: 0.7rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      background: #f0e4d7;
-      color: #594b3f;
-    }
-
-    .btn-small:hover {
-      background: #e6d6c3;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      margin-bottom: 4px;
-      color: #5f5146;
-    }
-
-    textarea,
-    input[type="number"] {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid #d8cfc6;
-      padding: 8px 10px;
-      font-size: 0.88rem;
-      font-family: "Poppins", monospace;
-      background: #fbf8f5;
-      outline: none;
-      transition: border 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 54px;
-    }
-
-    textarea:focus,
-    input[type="number"]:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 1px rgba(217,178,95,0.4);
-      background: #fffdfa;
-    }
-
-    .field {
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .error {
-      margin-top: 6px;
-      border-radius: 14px;
-      padding: 10px;
-      background: #fff5f5;
-      border: 1px solid #e0a6a6;
-      color: #7a2222;
-      font-size: 0.8rem;
-      display: none;
-    }
-
-    .result-panel {
-      margin-top: 6px;
-      border-radius: 20px;
-      padding: 16px 16px 14px;
-      background: linear-gradient(135deg, #fff9ee, #f8e7c4);
-      border: 1px solid rgba(217,178,95,0.55);
-      display: none;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .result-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.21em;
-      color: #8b6d3f;
-      margin-bottom: 4px;
-    }
-
-    .result-code {
-      font-size: 0.8rem;
-      color: #7b6a57;
-      margin-bottom: 2px;
-    }
-
-    .result-mrp {
-      font-family: "Playfair Display", serif;
-      font-size: 1.9rem;
-      color: var(--maroon-dark);
-      font-weight: 700;
-    }
-
-    .currency {
-      font-size: 1.1rem;
-      vertical-align: super;
-      margin-right: 2px;
-    }
-
-    .result-meta {
-      margin-top: 4px;
-      font-size: 0.78rem;
-      color: #7b6a57;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .btn-pill {
-      flex: 1;
-      font-size: 0.75rem;
-      padding: 7px 0;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 500;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--maroon), var(--maroon-dark));
-      color: #fff6e9;
-    }
-
-    .btn-outline {
-      background: #ffffff;
-      color: #7a4b30;
-      border: 1px solid rgba(122, 75, 48, 0.3);
-    }
-
-    .history {
-      margin-top: 14px;
-      border-radius: 18px;
-      border: 1px solid #e1d6c8;
-      background: #fbf8f5;
-      padding: 10px 12px 10px;
-      display: none;
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 4px;
-    }
-
-    .history-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #7e6a55;
-    }
-
-    .history-total {
-      font-size: 0.8rem;
-      color: #4d3b2a;
-    }
-
-    .history-total span {
-      font-weight: 600;
-    }
-
-    .history-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-      margin-top: 4px;
-    }
-
-    .history-table th,
-    .history-table td {
-      padding: 4px 3px;
-      text-align: right;
-      border-bottom: 1px solid #e7ddcf;
-    }
-
-    .history-table th:first-child,
-    .history-table td:first-child {
-      text-align: center;
-    }
-
-    .history-table th:nth-child(2),
-    .history-table td:nth-child(2),
-    .history-table th:nth-child(3),
-    .history-table td:nth-child(3) {
-      text-align: left;
-    }
-
-    .history-table thead th {
-      font-weight: 600;
-      color: #7b6a57;
-      background: #f3ebe3;
-    }
-
-    .history-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Toggle switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 30px;
-      height: 16px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #d8cfc6;
-      transition: 0.2s;
-      border-radius: 16px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 12px;
-      width: 12px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
-      transition: 0.2s;
-      border-radius: 50%;
-    }
-
-    .switch input:checked + .slider {
-      background-color: var(--maroon);
-    }
-
-    .switch input:checked + .slider:before {
-      transform: translateX(14px);
-    }
-
-    .switch-inline {
-      margin-left: 4px;
-      vertical-align: middle;
-    }
-
-    @media (max-width: 500px) {
-      .card { padding: 20px 16px 18px; }
-      .brand-logo { width: 54px; height: 54px; }
-      .brand-name { font-size: 1.2rem; }
-      .result-mrp { font-size: 1.7rem; }
-    }
+    #duplicate-error { color: var(--maroon); font-size: 0.75rem; margin: 8px 0; text-align: center; display: none; font-weight: 600; background: #fff1f1; padding: 6px; border-radius: 8px; }
+    .result-panel { margin-top: 10px; border-radius: 20px; padding: 20px; background: linear-gradient(135deg, #fffcf5, #f8f1e5); border: 1px solid rgba(217,178,95,0.4); display: none; }
+    .result-mrp { font-family: "Playfair Display", serif; font-size: 2.2rem; color: var(--maroon-dark); font-weight: 700; }
+    .actions-row { display: flex; gap: 10px; margin-top: 14px; }
+    .btn-pill { flex: 1; font-size: 0.8rem; padding: 12px 0; border-radius: 999px; border: none; cursor: pointer; text-transform: uppercase; font-weight: 600; }
+    .btn-primary { background: linear-gradient(135deg, var(--maroon), var(--maroon-dark)); color: #fff; }
+    .btn-outline { background: #fff; border: 1.5px solid #eee5db; color: #8a7b6e; }
+    
+    .history { margin-top: 20px; border-radius: 20px; border: 1.5px solid #eee5db; background: #fdfbf9; padding: 16px; display: none; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .history-table th, .history-table td { padding: 12px 6px; text-align: right; border-bottom: 1px solid #f0e9e1; }
+    .history-table th:nth-child(2), .history-table td:nth-child(2), .history-table th:nth-child(3), .history-table td:nth-child(3) { text-align: left; }
+    .history-table th { color: #b5a89d; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.05em; }
+    .mrp-clickable { cursor: pointer; color: var(--maroon-dark); font-weight: 600; border-bottom: 1px dashed #d9b25f; }
+    .btn-delete { background: none; border: none; cursor: pointer; color: #c9bcaf; width: 100%; display: flex; justify-content: center; }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #e1d6c8; transition: 0.3s; border-radius: 18px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--maroon); }
+    input:checked + .slider:before { transform: translateX(14px); }
   </style>
 </head>
 <body>
   <div class="shell">
     <div class="card">
       <div class="brand-header">
-        <img src="logo.png" alt="Shree Mangalam Jewellers" class="brand-logo" />
+        <img src="logo.png" alt="Logo" class="brand-logo" />
         <div class="brand-text">
           <div class="brand-name">Shree Mangalam Jewellers</div>
-          <div class="brand-subtitle">Specialist in Silver Jewellery 925</div>
-          <div class="brand-subtitle">Since 1994</div>
+          <div class="brand-subtitle">Specialist in Silver 925 • Since 1994</div>
         </div>
       </div>
-
       <div class="divider"></div>
-
-      <div class="title-row">
-        <h2>Quick Quotation</h2>
-        <button class="btn-small" id="sample-btn">Sample</button>
-      </div>
-
-      <div class="field">
-        <label for="qr-text">Scan QR</label>
-        <textarea id="qr-text" placeholder="Paste scanned data"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="silver-rate">Silver rate per gram (₹)</label>
-        <input id="silver-rate" type="number" step="0.01" value="150" />
-      </div>
-
-      <div class="error" id="error-box"></div>
+      <div class="title-row"><h2>Quick Quotation</h2><button class="btn-small" id="sample-btn">Sample</button></div>
+      <div style="margin-bottom: 12px;"><label>Scan QR</label><textarea id="qr-text" rows="2" placeholder="Paste scanned data here..."></textarea></div>
+      <div style="margin-bottom: 8px;"><label>Silver rate per gram (₹)</label><input id="silver-rate" type="number" step="0.01" value="225" /></div>
+      <div id="duplicate-error">⚠ Item already in history.</div>
 
       <div class="result-panel" id="result-panel">
-        <div class="result-label">Maximum retail price</div>
-        <div class="result-code" id="result-code"></div>
-        <div class="result-mrp">
-          <span class="currency">₹</span><span id="result-mrp">0.00</span>
-        </div>
+        <div style="font-size:0.65rem; text-transform:uppercase; color:#b0956b; letter-spacing:0.25em;">MRP Estimate</div>
+        <div id="result-code" style="font-size:0.85rem; color:#8a7b6e; font-weight:500;"></div>
+        <div class="result-mrp">₹<span id="result-mrp-val">0.00</span></div>
         <div class="result-meta" id="result-meta"></div>
       </div>
 
       <div class="actions-row">
-        <button class="btn-pill btn-primary" id="add-item-btn">Add item</button>
+        <button class="btn-pill btn-primary" id="add-btn">Add item</button>
         <button class="btn-pill btn-outline" id="reset-btn">Reset</button>
       </div>
 
       <div class="history" id="history-section">
-        <div class="history-header">
-          <div class="history-title">Item history</div>
-          <div class="history-total">
-            Total: ₹<span id="history-total">0.00</span>
-          </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items: baseline;">
+          <span style="font-size:0.7rem; text-transform:uppercase; color:#b5a89d; font-weight:700;">History (Dbl-Click MRP to Edit)</span>
+          <span style="font-size:0.9rem; color:var(--maroon-dark);">Total: <b>₹<span id="history-total">0.00</span></b></span>
         </div>
         <table class="history-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Code</th>
-              <th>Item</th>
-              <th>Net wt (g)</th>
-              <th>Rate</th>
-              <th>Making</th>
-              <th>MRP</th>
-              <th></th>
-            </tr>
-          </thead>
+          <thead><tr><th>#</th><th>Code</th><th>Item</th><th>Net wt</th><th>MRP</th><th style="width:40px;"></th><th style="width:30px;"></th></tr></thead>
           <tbody id="history-body"></tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-content">
+      <div class="modal-title" id="modal-item-title">Update Making</div>
+      <label>New Making Charges (₹/gm)</label>
+      <input type="number" id="modal-input" placeholder="Enter value">
+      <div class="modal-actions">
+        <button class="btn-pill btn-primary" onclick="confirmModalEdit()">Save</button>
+        <button class="btn-pill btn-outline" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const qrTextEl    = document.getElementById("qr-text");
-    const rateEl      = document.getElementById("silver-rate");
-    const sampleBtn   = document.getElementById("sample-btn");
+    const qrText = document.getElementById("qr-text"), rateEl = document.getElementById("silver-rate"), resPanel = document.getElementById("result-panel"), resBody = document.getElementById("history-body"), histSection = document.getElementById("history-section"), totalEl = document.getElementById("history-total"), errorDiv = document.getElementById("duplicate-error");
+    const editModal = document.getElementById("edit-modal"), modalInput = document.getElementById("modal-input"), modalTitle = document.getElementById("modal-item-title");
+    
+    const itemNames = {"SAS":"Agarbati Stand","SAL":"Amoliya","SAM":"Animal Murti","SAT":"Antiques","SBM":"Baby Braclet","SKB":"Baby Kada","SBJ":"Baby Leg Kada","SBB":"Baju Band","SBG":"Bangles","SBN":"Banta","SBL":"Bell","SBX":"Box","SBK":"Bucket","SCS":"Chain Pandant Set","SCH":"Chains","SCA":"Challa","SCT":"Chatar","SCG":"Chirag","SCL":"Chotla","SCB":"Coins & Bars","SCR":"Couple Rings","SCC":"Couple Set","SCU":"Cup","SDY":"Diya","SER":"Earings","SFC":"Face/Mukota","SCP":"Fancy Pandant","SFW":"Ferwa","SFL":"Flower","SFP":"Foolpatra","SGN":"Ganpati","SGB":"Gents Bracelet","SGR":"Gents Ring","SGH":"Ghar","SGL":"Glass","SGP":"God Pandant","SBT":"Gugra","SGD":"Gulabdani","SHP":"Hath Pan","SID":"Itardani","SJO":"Jodva","SJL":"Jula","SKA":"Kada","SKK":"Kamar Kandora","SKP":"Kapoor Aarti","SKR":"Karanda","SKY":"Key Chain","SKI":"Kohiri/Keri","SLB":"Ladies Bracelet","SLR":"Ladies Ring","SLT":"Lanturn","SLK":"Leg Kada","SLO":"Lota","SLW":"Loti+Wati","SMP":"Mangalsutra Pandant","SMS":"Mangalsutra Set","SMN":"Mani","SPJ":"Mix Pooja","SMT":"Moti Ring","SMK":"Mukut","SMR":"Murti","SNY":"Naryal","SNK":"Necklace","SPH":"Path","SPI":"Patra & Yantra","SPL":"Payal","SPK":"Pichkari","SSP":"Pin/Brouch","SPB":"Plain Bands","SPR":"Purse","SRD":"Rudhraksh & More","SSH":"Shihasan","SNS":"Shivling+Nag","SSY":"Shree Yantra","SSM":"Solid Murti","SSF":"Spoon/Fali","STB":"Tabiz","STT":"Tattalu","STE":"Test","STL":"Thali","STG":"Toe Rings","STI":"Trishul","STU":"Tulsi","STR":"Turtle Ring","SVG":"Vegetable","SWC":"Waist Chain","SWL":"Watch Charms","SWS":"Watches","SWT":"Wati"};
+    
+    let items = [], current = null, activeEditIndex = null;
 
-    const errorBox    = document.getElementById("error-box");
-    const resultPanel = document.getElementById("result-panel");
-    const resultCode  = document.getElementById("result-code");
-    const resultMrp   = document.getElementById("result-mrp");
-    const resultMeta  = document.getElementById("result-meta");
+    window.onload = () => { const r = localStorage.getItem("silverRate"); if(r) rateEl.value = r; qrText.focus(); };
 
-    const addItemBtn      = document.getElementById("add-item-btn");
-    const resetBtn        = document.getElementById("reset-btn");
-    const historySection  = document.getElementById("history-section");
-    const historyBody     = document.getElementById("history-body");
-    const historyTotalEl  = document.getElementById("history-total");
-
-    // Item code → name map
-    const itemNames = {
-      "SAS": "AGARBATI STAND",
-      "SAL": "AMOLIYA",
-      "SAM": "ANIMAL MURTI",
-      "SAT": "ANTIQUES",
-      "SBM": "BABY BRACLET",
-      "SKB": "BABY KADA",
-      "SBJ": "BABY LEG KADA",
-      "SBB": "BAJU BAND",
-      "SBG": "BANGLES",
-      "SBN": "BANTA",
-      "SBL": "BELL",
-      "SBX": "BOX",
-      "SBK": "BUCKET",
-      "SCS": "CHAIN PANDANT SET",
-      "SCH": "CHAINS",
-      "SCA": "CHALLA",
-      "SCT": "CHATAR",
-      "SCG": "CHIRAG",
-      "SCL": "CHOTLA",
-      "SCB": "COINS & BARS",
-      "SCR": "COUPLE RINGS",
-      "SCC": "COUPLE SET",
-      "SCU": "CUP",
-      "SDY": "DIYA",
-      "SER": "EARINGS",
-      "SFC": "FACE/MUKOTA",
-      "SCP": "FANCY PANDANT",
-      "SFW": "FERWA",
-      "SFL": "FLOWER",
-      "SFP": "FOOLPATRA",
-      "SGB": "GENTS BRACELET",
-      "SGR": "GENTS RING",
-      "SGH": "GHAR",
-      "SGL": "GLASS",
-      "SGP": "GOD PANDANT",
-      "SBT": "GUGRA",
-      "SGD": "GULABDANI",
-      "SHP": "HATH PAN",
-      "SID": "ITARDANI",
-      "SJO": "JODVA",
-      "SKA": "KADA",
-      "SKK": "KAMAR KANDORA",
-      "SKP": "KAPOOR AARTI",
-      "SKR": "KARANDA",
-      "SKY": "KEY CHAIN",
-      "SKI": "KOHIRI/KERI",
-      "SLB": "LADIES BRACELET",
-      "SLR": "LADIES RING",
-      "SLT": "LANTURN",
-      "SLK": "LEG KADA",
-      "SLO": "LOTA",
-      "SLW": "LOTI+WATI",
-      "SMP": "MANGALSUTRA PANDANT",
-      "SMS": "MANGALSUTRA SET",
-      "SMT": "MOTI RING",
-      "SMK": "MUKUT",
-      "SMR": "MURTI",
-      "SNY": "NARYAL",
-      "SNK": "Necklace",
-      "SPH": "PATH",
-      "SPL": "PAYAL",
-      "SPK": "PICHKARI",
-      "SSP": "PIN/BROUCH",
-      "SPB": "PLAIN BANDS",
-      "SPR": "PURSE",
-      "SRD": "RUDHRAKSH & MORE",
-      "SSH": "SHIHASAN",
-      "SNS": "SHIVLING+NAG",
-      "SSM": "SOLID MURTI",
-      "SSF": "SPOON/FALI",
-      "STT": "TATTALU",
-      "STE": "test",
-      "STL": "THALI",
-      "STU": "TULSI",
-      "STR": "TURTLE RING",
-      "SVG": "VEGETABLE",
-      "SWC": "WAIST CHAIN",
-      "SWL": "WATCH CHARMS",
-      "SWS": "WATCHES",
-      "SWT": "WATI"
-    };
-
-    let items = [];
-    let resultDetailsVisible = false;
-
-    // Load last rate
-    window.addEventListener("load", () => {
-      const savedRate = localStorage.getItem("silverRate");
-      if (savedRate !== null) rateEl.value = savedRate;
-      qrTextEl.focus();
+    qrText.addEventListener("input", function() {
+      errorDiv.style.display = "none";
+      const lines = this.value.split('\n').filter(l => l.trim());
+      if (lines.length > 1) { 
+        if (current && !items.find(it => it.code === current.code)) items.push({...current}); 
+        this.value = lines[lines.length - 1]; renderHistory(); 
+      }
+      current = parseLine(this.value.trim()); updatePanel();
     });
 
-    function showError(msg) {
-      errorBox.textContent = msg;
-      errorBox.style.display = "block";
-      resultPanel.style.display = "none";
+    function parseLine(raw) {
+      const p = raw.split(","); if (p.length < 6) return null;
+      const rate = parseFloat(rateEl.value) || 0, code = p[0].trim(), wt = parseFloat(p[3]), making = parseFloat(p[5]);
+      if (isNaN(wt) || isNaN(making)) return null;
+      return calculateItem(code, wt, rate, making);
     }
 
-    function clearError() {
-      errorBox.style.display = "none";
+    function calculateItem(code, wt, rate, making) {
+      const mrp = wt * (rate + making) * 1.03;
+      return { code, name: itemNames[code.slice(0,3).toUpperCase()] || "Silver Item", wt, rate, making, mrp, isHigh: making > 100, show: making <= 100 };
     }
 
-    function calculateCurrent() {
-      clearError();
-      const raw = qrTextEl.value.trim();
-      const silverRate = parseFloat(rateEl.value);
-
-      if (!raw || isNaN(silverRate) || silverRate <= 0) {
-        resultPanel.style.display = "none";
-        return null;
-      }
-
-      const parts = raw.split(",");
-      if (parts.length < 6) {
-        showError("Invalid QR format");
-        return null;
-      }
-
-      const productCode = parts[0];
-      const netWt       = parseFloat(parts[3]);
-      const makingPerGm = parseFloat(parts[5]);
-
-      if ([netWt, makingPerGm].some(v => isNaN(v))) {
-        showError("Invalid weight or making value.");
-        return null;
-      }
-
-      const mrp = netWt * (silverRate + makingPerGm) * 1.03;
-      const highMaking = makingPerGm > 100;
-      const itemCode   = productCode.slice(0, 3).toUpperCase();
-      const itemName   = itemNames[itemCode] || "";
-
-      resultCode.textContent = itemName
-        ? `Code: ${productCode} • ${itemName}`
-        : `Code: ${productCode}`;
-      resultMrp.textContent = mrp.toFixed(2);
-      resultPanel.style.display = "block";
-
-      if (!highMaking) {
-        resultMeta.innerHTML =
-          `Net wt: ${netWt.toFixed(3)} g • Rate: ₹${silverRate} • Making: ₹${makingPerGm}/gm`;
-      } else {
-        const detailsText = resultDetailsVisible
-          ? `Net wt: ${netWt.toFixed(3)} g • Rate: ₹${silverRate} • Making: ₹${makingPerGm}/gm`
-          : "";
-
-        resultMeta.innerHTML = `
-          <span id="result-meta-text">${detailsText}</span>
-          <label class="switch switch-inline">
-            <input type="checkbox" id="result-toggle" ${resultDetailsVisible ? "checked" : ""}>
-            <span class="slider"></span>
-          </label>
-        `;
-        document.getElementById("result-toggle").onchange = () => {
-          resultDetailsVisible = !resultDetailsVisible;
-          calculateCurrent();
-        };
-      }
-
-      return {
-        productCode,
-        itemName,
-        netWt,
-        silverRate,
-        makingPerGm,
-        mrp,
-        highMaking,
-        detailsVisible: !highMaking
-      };
-    }
-
-    function autoCalculate() {
-      calculateCurrent();
+    function updatePanel() {
+      if (!current) { resPanel.style.display = "none"; return; }
+      resPanel.style.display = "block";
+      document.getElementById("result-code").textContent = `${current.code} • ${current.name}`;
+      document.getElementById("result-mrp-val").textContent = current.mrp.toFixed(2);
+      const meta = document.getElementById("result-meta");
+      const details = current.show ? `Net wt: ${current.wt.toFixed(3)}g | Rate: ${current.rate}` : "";
+      meta.innerHTML = `<span style="font-weight:500;">${details}</span>` + (current.isHigh ? `<label class="switch"><input type="checkbox" ${current.show?'checked':''} onchange="toggleCurrent(this.checked)"><span class="slider"></span></label>` : "");
     }
 
     function renderHistory() {
-      if (!items.length) {
-        historySection.style.display = "none";
-        historyBody.innerHTML = "";
-        historyTotalEl.textContent = "0.00";
-        return;
+      if (!items.length) { histSection.style.display="none"; return; }
+      histSection.style.display="block";
+      resBody.innerHTML = items.map((it, i) => `<tr>
+        <td>${i+1}</td><td style="font-weight:600;">${it.code}</td><td>${it.name}</td>
+        <td>${it.show ? it.wt.toFixed(3) : '—'}</td>
+        <td class="mrp-clickable" ondblclick="openEditModal(${i})">₹${it.mrp.toFixed(2)}</td>
+        <td>${it.isHigh ? `<label class="switch"><input type="checkbox" ${it.show?'checked':''} onchange="toggleHist(${i})"><span class="slider"></span></label>` : ''}</td>
+        <td><button class="btn-delete" onclick="deleteItem(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></button></td>
+      </tr>`).join("");
+      totalEl.textContent = items.reduce((s, it) => s + it.mrp, 0).toFixed(2);
+    }
+
+    // Modal Logic
+    window.openEditModal = (index) => {
+      activeEditIndex = index;
+      const it = items[index];
+      modalTitle.textContent = `Edit Making: ${it.code}`;
+      modalInput.value = it.making;
+      editModal.style.display = "flex";
+      setTimeout(() => modalInput.focus(), 100);
+    };
+
+    window.closeModal = () => { editModal.style.display = "none"; activeEditIndex = null; };
+
+    window.confirmModalEdit = () => {
+      const newVal = parseFloat(modalInput.value);
+      if (activeEditIndex !== null && !isNaN(newVal)) {
+        const it = items[activeEditIndex];
+        items[activeEditIndex] = calculateItem(it.code, it.wt, it.rate, newVal);
+        renderHistory();
+        closeModal();
       }
+    };
 
-      historySection.style.display = "block";
-      historyBody.innerHTML = items.map((item, idx) => {
-        const hide = item.highMaking && !item.detailsVisible;
-        return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td>${item.productCode}</td>
-            <td>${item.itemName}</td>
-            <td>${hide ? "" : item.netWt.toFixed(3)}</td>
-            <td>${hide ? "" : item.silverRate.toFixed(0)}</td>
-            <td>${hide ? "" : item.makingPerGm.toFixed(0)}</td>
-            <td>${item.mrp.toFixed(2)}</td>
-            <td>${item.highMaking ? `
-              <label class="switch">
-                <input type="checkbox" class="row-toggle" data-index="${idx}" ${item.detailsVisible ? "checked" : ""}>
-                <span class="slider"></span>
-              </label>` : ""}</td>
-          </tr>`;
-      }).join("");
+    window.toggleCurrent = (v) => { if(current){ current.show = v; updatePanel(); }};
+    window.toggleHist = (i) => { items[i].show = !items[i].show; renderHistory(); };
+    window.deleteItem = (i) => { items.splice(i, 1); renderHistory(); };
+    
+    document.getElementById("add-btn").onclick = () => { 
+      if(current){
+        if (items.some(it => it.code === current.code)) { errorDiv.style.display = "block"; return; }
+        items.push({...current}); current=null; qrText.value=""; resPanel.style.display="none"; errorDiv.style.display = "none";
+        renderHistory(); qrText.focus();
+      }
+    };
+    
+    document.getElementById("reset-btn").onclick = () => { 
+      items=[]; current=null; qrText.value=""; resPanel.style.display="none"; errorDiv.style.display = "none"; 
+      renderHistory(); qrText.focus(); 
+    };
+    
+    rateEl.oninput = () => { localStorage.setItem("silverRate", rateEl.value); if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); }};
+    document.getElementById("sample-btn").onclick = () => { qrText.value = "STE1,925,1,0.9,1,200,\\Gm,,,,,,,,,,,,,,"; qrText.dispatchEvent(new Event('input')); qrText.focus(); };
 
-      const total = items.reduce((sum, it) => sum + it.mrp, 0);
-      historyTotalEl.textContent = total.toFixed(2);
-    }
-
-    function addItem() {
-      const current = calculateCurrent();
-      if (!current) return qrTextEl.focus();
-
-      items.push(current);
-      renderHistory();
-
-      qrTextEl.value = "";
-      resultPanel.style.display = "none";
-      resultDetailsVisible = false;
-      qrTextEl.focus();
-    }
-
-    function resetItems() {
-      items = [];
-      renderHistory();
-      qrTextEl.value = "";
-      resultPanel.style.display = "none";
-      resultDetailsVisible = false;
-      qrTextEl.focus();
-    }
-
-    qrTextEl.addEventListener("input", autoCalculate);
-    rateEl.addEventListener("input", () => {
-      localStorage.setItem("silverRate", rateEl.value);
-      autoCalculate();
-    });
-
-    sampleBtn.addEventListener("click", () => {
-      qrTextEl.value = "STE1,925,1,0.9,1,200,\\Gm,,,,,,,,,,,,,,";
-      resultDetailsVisible = false;
-      autoCalculate();
-    });
-
-    addItemBtn.addEventListener("click", addItem);
-    resetBtn.addEventListener("click", resetItems);
-
-    historyBody.addEventListener("change", (e) => {
-      if (!e.target.classList.contains("row-toggle")) return;
-      const index = parseInt(e.target.dataset.index);
-      items[index].detailsVisible = e.target.checked;
-      renderHistory();
-    });
+    // Close modal on Enter key
+    modalInput.addEventListener("keydown", (e) => { if(e.key === "Enter") confirmModalEdit(); });
   </script>
-</body>
-</html>
+</body></html>
