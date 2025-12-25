@@ -19,12 +19,10 @@
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
-            /* Disables text selection when double tapping on mobile */
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Allow typing in inputs/textareas despite the selection lock */
         input, textarea {
             -webkit-user-select: text;
             user-select: text;
@@ -40,7 +38,7 @@
             align-items: center; 
             padding: 20px; 
             color: var(--text); 
-            touch-action: manipulation; /* Prevents double-tap zoom */
+            touch-action: manipulation; 
         }
 
         .shell { max-width: 580px; width: 100%; }
@@ -158,7 +156,6 @@
         .btn-primary { background: linear-gradient(135deg, var(--maroon), var(--maroon-dark)); color: #fff; flex: 2; }
         .btn-outline { background: #fff; border: 1.5px solid #eee5db; color: #8a7b6e; }
 
-        /* Darker grey for Clear button */
         .btn-grey { 
             background: #f0ece7 !important; 
             border: 1.5px solid #e1d6c8 !important; 
@@ -189,7 +186,6 @@
         input:checked + .slider { background-color: var(--maroon); }
         input:checked + .slider:before { transform: translateX(14px); }
 
-        /* Numpad Styling */
         .numpad { 
             position: fixed; 
             bottom: 0; left: 0; right: 0; 
@@ -343,7 +339,8 @@
 
         let items = [], current = null, activeEditIndex = null, isModalOpen = false, activeInput = null;
 
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        // Enhanced Tablet/Mobile Detection
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 0);
 
         if (isMobile) {
             document.body.classList.add('is-mobile');
@@ -358,20 +355,28 @@
         window.numTap = (n) => { 
             if (preview.innerText === '0' && n !== '.') preview.innerText = n; else preview.innerText += n;
             activeInput.value = preview.innerText;
-            if (activeInput === rateEl) { 
-                localStorage.setItem("silverRate", rateEl.value); 
-                if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); } 
-            }
+            handleRateChange();
         };
 
         window.numDel = () => { 
             preview.innerText = preview.innerText.slice(0, -1) || '0'; 
             activeInput.value = preview.innerText;
-            if (activeInput === rateEl) { 
-                localStorage.setItem("silverRate", rateEl.value); 
-                if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); } 
-            }
+            handleRateChange();
         };
+
+        function handleRateChange() {
+            if (activeInput === rateEl) { 
+                const newRate = parseFloat(rateEl.value) || 0;
+                localStorage.setItem("silverRate", rateEl.value); 
+                
+                // Update currently scanned item
+                if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); } 
+                
+                // NEW: Update all items in history instantly
+                items = items.map(item => calculateItem(item.code, item.wt, newRate, item.making, item.show, item.isHigh));
+                renderHistory();
+            }
+        }
 
         const forceFocus = () => { if (!isModalOpen && !numpad.classList.contains('active') && document.activeElement !== rateEl) { qrText.focus(); } };
 
@@ -397,9 +402,16 @@
             return calculateItem(code, wt, rate, making);
         }
 
-        function calculateItem(code, wt, rate, making) {
+        // Expanded calculateItem to handle existing state during updates
+        function calculateItem(code, wt, rate, making, show = null, isHigh = null) {
             const mrp = wt * (rate + making) * 1.03;
-            return { code, name: itemNames[code.slice(0,3).toUpperCase()] || "Silver Item", wt, rate, making, mrp, isHigh: making > 100, show: making <= 100 };
+            return { 
+                code, 
+                name: itemNames[code.slice(0,3).toUpperCase()] || "Silver Item", 
+                wt, rate, making, mrp, 
+                isHigh: isHigh !== null ? isHigh : making > 100, 
+                show: show !== null ? show : (making <= 100)
+            };
         }
 
         function updatePanel() {
@@ -429,8 +441,10 @@
 
         window.confirmModalEdit = () => {
             const newVal = parseFloat(modalInput.value);
+            const rate = parseFloat(rateEl.value) || 0;
             if (activeEditIndex !== null && !isNaN(newVal)) {
-                const it = items[activeEditIndex]; items[activeEditIndex] = calculateItem(it.code, it.wt, it.rate, newVal);
+                const it = items[activeEditIndex]; 
+                items[activeEditIndex] = calculateItem(it.code, it.wt, rate, newVal, it.show, it.isHigh);
                 renderHistory(); closeModal();
             }
         };
@@ -457,9 +471,10 @@
             errorDiv.style.display = "none"; renderHistory(); qrText.focus(); 
         };
 
+        // Desktop input listener for rate change
         rateEl.oninput = () => { 
-            localStorage.setItem("silverRate", rateEl.value); 
-            if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); }
+            activeInput = rateEl; 
+            handleRateChange(); 
         };
 
         document.getElementById("sample-btn").onclick = () => { 
