@@ -16,9 +16,10 @@
     h2 { margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.18em; color: #a19388; font-weight: 600; }
     .btn-small { font-size: 0.7rem; padding: 5px 12px; border-radius: 999px; border: 1px solid #e1d6c8; cursor: pointer; background: #fdfaf7; color: #8a7b6e; transition: 0.2s; }
     label { display: block; font-size: 0.8rem; margin-bottom: 6px; color: #8a7b6e; font-weight: 500; }
-    textarea, input[type="number"] { width: 100%; border-radius: 12px; border: 1.5px solid #eee5db; padding: 10px 14px; font-size: 0.9rem; font-family: "Poppins", monospace; background: #fbf9f7; outline: none; }
+    textarea, input[type="number"] { width: 100%; border-radius: 12px; border: 1.5px solid #eee5db; padding: 10px 14px; font-size: 0.9rem; font-family: "Poppins", monospace; background: #fbf9f7; outline: none; transition: border-color 0.3s; }
+    textarea:focus { border-color: var(--gold); background: #fff; }
     
-    /* Custom Modal Styles */
+    /* Modal Styles */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; }
     .modal-content { background: #fff; padding: 24px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
     .modal-title { font-family: "Playfair Display", serif; font-size: 1.2rem; color: var(--maroon-dark); margin-bottom: 16px; }
@@ -40,7 +41,6 @@
     .mrp-clickable { cursor: pointer; color: var(--maroon-dark); font-weight: 600; border-bottom: 1px dashed #d9b25f; }
     .btn-delete { background: none; border: none; cursor: pointer; color: #c9bcaf; width: 100%; display: flex; justify-content: center; }
     
-    /* Toggle Switch */
     .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; inset: 0; background-color: #e1d6c8; transition: 0.3s; border-radius: 18px; }
@@ -106,11 +106,26 @@
     const qrText = document.getElementById("qr-text"), rateEl = document.getElementById("silver-rate"), resPanel = document.getElementById("result-panel"), resBody = document.getElementById("history-body"), histSection = document.getElementById("history-section"), totalEl = document.getElementById("history-total"), errorDiv = document.getElementById("duplicate-error");
     const editModal = document.getElementById("edit-modal"), modalInput = document.getElementById("modal-input"), modalTitle = document.getElementById("modal-item-title");
     
+    // Proper Case Item Names
     const itemNames = {"SAS":"Agarbati Stand","SAL":"Amoliya","SAM":"Animal Murti","SAT":"Antiques","SBM":"Baby Braclet","SKB":"Baby Kada","SBJ":"Baby Leg Kada","SBB":"Baju Band","SBG":"Bangles","SBN":"Banta","SBL":"Bell","SBX":"Box","SBK":"Bucket","SCS":"Chain Pandant Set","SCH":"Chains","SCA":"Challa","SCT":"Chatar","SCG":"Chirag","SCL":"Chotla","SCB":"Coins & Bars","SCR":"Couple Rings","SCC":"Couple Set","SCU":"Cup","SDY":"Diya","SER":"Earings","SFC":"Face/Mukota","SCP":"Fancy Pandant","SFW":"Ferwa","SFL":"Flower","SFP":"Foolpatra","SGN":"Ganpati","SGB":"Gents Bracelet","SGR":"Gents Ring","SGH":"Ghar","SGL":"Glass","SGP":"God Pandant","SBT":"Gugra","SGD":"Gulabdani","SHP":"Hath Pan","SID":"Itardani","SJO":"Jodva","SJL":"Jula","SKA":"Kada","SKK":"Kamar Kandora","SKP":"Kapoor Aarti","SKR":"Karanda","SKY":"Key Chain","SKI":"Kohiri/Keri","SLB":"Ladies Bracelet","SLR":"Ladies Ring","SLT":"Lanturn","SLK":"Leg Kada","SLO":"Lota","SLW":"Loti+Wati","SMP":"Mangalsutra Pandant","SMS":"Mangalsutra Set","SMN":"Mani","SPJ":"Mix Pooja","SMT":"Moti Ring","SMK":"Mukut","SMR":"Murti","SNY":"Naryal","SNK":"Necklace","SPH":"Path","SPI":"Patra & Yantra","SPL":"Payal","SPK":"Pichkari","SSP":"Pin/Brouch","SPB":"Plain Bands","SPR":"Purse","SRD":"Rudhraksh & More","SSH":"Shihasan","SNS":"Shivling+Nag","SSY":"Shree Yantra","SSM":"Solid Murti","SSF":"Spoon/Fali","STB":"Tabiz","STT":"Tattalu","STE":"Test","STL":"Thali","STG":"Toe Rings","STI":"Trishul","STU":"Tulsi","STR":"Turtle Ring","SVG":"Vegetable","SWC":"Waist Chain","SWL":"Watch Charms","SWS":"Watches","SWT":"Wati"};
     
-    let items = [], current = null, activeEditIndex = null;
+    let items = [], current = null, activeEditIndex = null, isModalOpen = false;
 
-    window.onload = () => { const r = localStorage.getItem("silverRate"); if(r) rateEl.value = r; qrText.focus(); };
+    const forceFocus = () => {
+      if (!isModalOpen && document.activeElement !== rateEl) {
+        qrText.focus();
+      }
+    };
+
+    window.onload = () => { 
+      const r = localStorage.getItem("silverRate"); 
+      if(r) rateEl.value = r; 
+      qrText.focus(); 
+    };
+
+    document.addEventListener("click", (e) => {
+      setTimeout(forceFocus, 50);
+    });
 
     qrText.addEventListener("input", function() {
       errorDiv.style.display = "none";
@@ -157,9 +172,9 @@
       totalEl.textContent = items.reduce((s, it) => s + it.mrp, 0).toFixed(2);
     }
 
-    // Modal Logic
     window.openEditModal = (index) => {
       activeEditIndex = index;
+      isModalOpen = true;
       const it = items[index];
       modalTitle.textContent = `Edit Making: ${it.code}`;
       modalInput.value = it.making;
@@ -167,7 +182,12 @@
       setTimeout(() => modalInput.focus(), 100);
     };
 
-    window.closeModal = () => { editModal.style.display = "none"; activeEditIndex = null; };
+    window.closeModal = () => { 
+      editModal.style.display = "none"; 
+      activeEditIndex = null; 
+      isModalOpen = false;
+      qrText.focus();
+    };
 
     window.confirmModalEdit = () => {
       const newVal = parseFloat(modalInput.value);
@@ -181,7 +201,7 @@
 
     window.toggleCurrent = (v) => { if(current){ current.show = v; updatePanel(); }};
     window.toggleHist = (i) => { items[i].show = !items[i].show; renderHistory(); };
-    window.deleteItem = (i) => { items.splice(i, 1); renderHistory(); };
+    window.deleteItem = (i) => { items.splice(i, 1); renderHistory(); qrText.focus(); };
     
     document.getElementById("add-btn").onclick = () => { 
       if(current){
@@ -191,6 +211,7 @@
       }
     };
     
+    // Clear bill removed confirmation
     document.getElementById("reset-btn").onclick = () => { 
       items=[]; current=null; qrText.value=""; resPanel.style.display="none"; errorDiv.style.display = "none"; 
       renderHistory(); qrText.focus(); 
@@ -199,7 +220,6 @@
     rateEl.oninput = () => { localStorage.setItem("silverRate", rateEl.value); if(qrText.value){ current = parseLine(qrText.value.trim()); updatePanel(); }};
     document.getElementById("sample-btn").onclick = () => { qrText.value = "STE1,925,1,0.9,1,200,\\Gm,,,,,,,,,,,,,,"; qrText.dispatchEvent(new Event('input')); qrText.focus(); };
 
-    // Close modal on Enter key
     modalInput.addEventListener("keydown", (e) => { if(e.key === "Enter") confirmModalEdit(); });
   </script>
 </body></html>
